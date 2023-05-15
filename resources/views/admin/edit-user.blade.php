@@ -148,7 +148,7 @@
                 </div>
 
                 <div class="row">
-                    <div class="form-group col-md-6">
+                    <div class="form-group col-md-3">
                         <label for="blood_group" class="col-sm-12 col-form-label">Blood Group</label>
                         <div class="col-sm-12 err_msg">
                             <input type="text" class="form-control" name="blood_group" id="blood_group"
@@ -175,10 +175,20 @@
                                 value="{{ old('adhar_pic', $user->middlename) }}" placeholder="Enter Adhaar Card No.">
                         </div>
                     </div>
+                    <div class="form-group col-md-3 mt-auto">
+                        @if ($user->adhar_pic)
+                            <label for="adhar_pic" class="col-sm-12 col-form-label pb-0"><a
+                                    href="/storage/{{ $user->adhar_pic }}" target="blank" class="btn btn-info">Show
+                                    Adhaar</a>
+                            </label>
+                        @else
+                            <span class="btn btn-secondary">No PAN</span>
+                        @endif
+                    </div>
                 </div>
 
                 <div class="row">
-                    <div class="form-group col-md-3">
+                    <div class="form-group col-md-6">
                         <label for="pan_no" class="col-sm-12 col-form-label">PAN No.</label>
                         <div class="col-sm-12 err_msg">
                             <input type="text" class="form-control" name="pan_no" id="pan_no"
@@ -190,7 +200,16 @@
                             @enderror
                         </div>
                     </div>
+                    <div class="form-group col-md-6">
+                        <label for="account_no" class="col-sm-12 col-form-label">Account No.</label>
+                        <div class="col-sm-12 err_msg">
+                            <input type="text" class="form-control" name="account_no" id="account_no"
+                                value="{{ old('account_no', $user->account_no) }}"placeholder="Enter Bank Account No.">
+                        </div>
+                    </div>
+                </div>
 
+                <div class="row">
                     <div class="form-group col-md-3">
                         <label for="pan_pic" class="col-sm-12 col-form-label">Upload Pan Card</label>
                         <div class="col-sm-12 err_msg">
@@ -198,13 +217,15 @@
                                 value="{{ old('pan_pic') }}" placeholder="Enter Adhaar Card No.">
                         </div>
                     </div>
-
-                    <div class="form-group col-md-3">
-                        <label for="account_no" class="col-sm-12 col-form-label">Account No.</label>
-                        <div class="col-sm-12 err_msg">
-                            <input type="text" class="form-control" name="account_no" id="account_no"
-                                value="{{ old('account_no', $user->account_no) }}"placeholder="Enter Bank Account No.">
-                        </div>
+                    <div class="form-group col-md-3 mt-auto">
+                        @if ($user->pan_pic)
+                            <label for="pan_pic" class="col-sm-12 col-form-label pb-0"><a
+                                    href="/storage/{{ $user->pan_pic }}" target="blank" class="btn btn-info">Show
+                                    PAN</a>
+                            </label>
+                        @else
+                            <span class="btn btn-secondary">No PAN</span>
+                        @endif
                     </div>
 
                     <div class="form-group col-md-3">
@@ -213,6 +234,16 @@
                             <input type="file" class="form-control" name="passbook_pic" id="passbook_pic"
                                 value="{{ old('passbook_pic') }}" placeholder="Enter Adhaar Card No.">
                         </div>
+                    </div>
+                    <div class="form-group col-md-3 mt-auto">
+                        @if ($user->passbook_pic)
+                            <label for="passbook_pic" class="col-sm-12 col-form-label pb-0"><a
+                                    href="/storage/{{ $user->passbook_pic }}" target="blank" class="btn btn-info">Show
+                                    Passbook</a>
+                            </label>
+                        @else
+                            <span class="btn btn-secondary">No Passbook</span>
+                        @endif
                     </div>
                 </div>
 
@@ -399,6 +430,19 @@
                                 value="{{ old('passport_pic') }}">
                         </div>
                     </div>
+
+                    <div class="form-group col-md-3 mt-auto">
+                        @if ($user->passport_pic)
+                            <label for="passport_pic" class="col-sm-12 col-form-label pb-0"><a
+                                    href="/storage/{{ $user->passport_pic }}" target="blank" class="btn btn-info">Show
+                                    Passport
+                                    Photo</a>
+                            </label>
+                        @else
+                            <span class="btn btn-secondary">No Passport Photo</span>
+                        @endif
+                    </div>
+
                     <div class="form-group col-md-3">
                         <label for="address_proof_pic" class="col-sm-12 col-form-label">Address Proof</label>
                         <div class="col-sm-12 err_msg">
@@ -407,19 +451,61 @@
                         </div>
                     </div>
 
+                    <div class="form-group col-md-3 mt-auto">
+                        @if ($user->address_proof_pic)
+                            <label for="address_proof_pic" class="col-sm-12 col-form-label pb-0"><a
+                                    href="/storage/{{ $user->address_proof_pic }}" target="blank"
+                                    class="btn btn-info">Show Address
+                                    Proof</a>
+                            </label>
+                        @else
+                            <span class="btn btn-secondary">No Address Proof</span>
+                        @endif
+                    </div>
+
+                </div>
+                <div class="row">
+
                     <div class="form-group col-md-3">
-                        <label for="experience_letter" class="col-sm-12 col-form-label">Experience Letter</label>
+                        <label for="experience_letter_pic" class="col-sm-12 col-form-label">Experience Letter</label>
                         <div class="col-sm-12 err_msg">
-                            <input type="file" class="form-control" id="experience_letter"
-                                value="{{ old('experience_letter') }}">
+                            <input type="file" class="form-control" id="experience_letter_pic"
+                                name="experience_letter_pic" value="{{ old('experience_letter_pic') }}">
                         </div>
                     </div>
+                    <div class="form-group col-md-3 mt-auto">
+                        @if ($user->experience_letter_pic)
+                            <label for="experience_letter_pic" class="col-sm-12 col-form-label pb-0"><a
+                                    href="/storage/{{ $user->experience_letter_pic }}" target="blank"
+                                    class="btn btn-info">Show
+                                    Experience
+                                    Letter</a>
+                            </label>
+                        @else
+                            <span class="btn btn-secondary">No Experience
+                                Letter</span>
+                        @endif
+                    </div>
                     <div class="form-group col-md-3">
-                        <label for="certificate" class="col-sm-12 col-form-label">Educational Certificate</label>
+                        <label for="educational_certificate_pic" class="col-sm-12 col-form-label">Educational
+                            Certificate</label>
                         <div class="col-sm-12 err_msg">
-                            <input type="file" class="form-control" id="certificate"
-                                value="{{ old('certificate') }}">
+                            <input type="file" class="form-control" id="educational_certificate_pic"
+                                name="educational_certificate_pic" value="{{ old('educational_certificate_pic') }}">
                         </div>
+                    </div>
+                    <div class="form-group col-md-3 mt-auto">
+                        @if ($user->educational_certificate_pic)
+                            <label for="educational_certificate_pic" class="col-sm-12 col-form-label pb-0"><a
+                                    href="/storage/{{ $user->educational_certificate_pic }}" target="blank"
+                                    class="btn btn-info">Show
+                                    Educational
+                                    Certificate</a>
+                            </label>
+                        @else
+                            <span class="btn btn-secondary">No Educational
+                                Certificate</span>
+                        @endif
                     </div>
 
                 </div>
@@ -524,12 +610,12 @@
                     pan_no: {
                         required: true,
                         minlength: 10,
-                        maxlength: 20,
+                        maxlength: 10,
                     },
                     adhar_no: {
                         required: true,
                         minlength: 16,
-                        maxlength: 20,
+                        maxlength: 16,
                     },
                     temporary_address: {
                         required: true,
@@ -622,13 +708,13 @@
                     },
                     pan_no: {
                         required: "Please Enter PAN No.",
-                        minlength: "PAN no. must be at least 10 characters",
-                        maxlength: "PAN no. cannot be more than 20 characters long"
+                        minlength: "PAN no. must be 10 characters",
+                        maxlength: "PAN no. must be 10 characters"
                     },
                     adhar_no: {
                         required: "Please Enter Adhaar No.",
-                        minlength: "Adhaar no. must be at least 16 characters",
-                        maxlength: "Adhaar no. cannot be more than 20 characters long"
+                        minlength: "Adhaar no. must be 16 characters",
+                        maxlength: "Adhaar no. must be 16 characters"
                     },
                     temporary_address: {
                         required: "Please Enter Temporary Address",

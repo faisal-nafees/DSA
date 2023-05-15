@@ -75,24 +75,50 @@ class Common_model extends Model
         return $query->first();
     }
 
-    public function search_data($tableName, $fieldName = null, $startDate = null, $endDate = null, $searchTerm = null, $joinTable1 = null, $joinColumn1 = null, $joinColumn2 = null, $joinTable2 = null, $joinColumn3 = null, $joinColumn4 = null)
+    public function search_data($tableName, $fieldName = null, $startDate = null, $endDate = null,  $dateFieldName = null, $searchTerm = null, $joinTable1 = null, $joinColumn1 = null, $joinColumn2 = null, $joinTable2 = null, $joinColumn3 = null, $joinColumn4 = null, $joinTable3 = null, $joinColumn5 = null, $joinColumn6 = null)
     {
         $query = DB::table($tableName);
 
-        if ($startDate) {
-            $query->whereDate('created_at', '>=', $startDate);
+        if ($startDate && $dateFieldName) {
+            $query->whereDate($tableName . '.' . $dateFieldName, '>=', $startDate);
+        } elseif ($startDate) {
+            $query->whereDate($tableName . '.created_at', '>=', $startDate);
         }
-        if ($endDate) {
-            $query->whereDate('created_at', '<=', $endDate);
+        if ($endDate && $dateFieldName) {
+            $query->whereDate($tableName . '.' . $dateFieldName, '<=', $endDate);
+        } elseif ($endDate) {
+            $query->whereDate($tableName . '.created_at', '<=', $endDate);
         }
         if ($searchTerm && $fieldName) {
-            $query->where($fieldName, $searchTerm);
+            $query->where($tableName . '.' . $fieldName, $searchTerm);
         }
         if ($joinTable1 && $joinColumn1 && $joinColumn2) {
             $query->join($joinTable1, $joinColumn1, '=', $joinColumn2);
         }
         if ($joinTable2 && $joinColumn3 && $joinColumn4) {
             $query->join($joinTable2, $joinColumn3, '=', $joinColumn4);
+        }
+        if ($joinTable3 && $joinColumn5 && $joinColumn6) {
+            $query->join($joinTable3, $joinColumn5, '=', $joinColumn6);
+        }
+        return $query->get();
+    }
+
+    public function search_today($tableName, $startDate = null, $dateFieldName = null, $joinTable1 = null, $joinColumn1 = null, $joinColumn2 = null, $joinTable2 = null, $joinColumn3 = null, $joinColumn4 = null, $joinTable3 = null, $joinColumn5 = null, $joinColumn6 = null)
+    {
+        $query = DB::table($tableName);
+
+        if ($startDate && $dateFieldName) {
+            $query->whereDate($tableName . '.' . $dateFieldName, '=', $startDate);
+        }
+        if ($joinTable1 && $joinColumn1 && $joinColumn2) {
+            $query->join($joinTable1, $joinColumn1, '=', $joinColumn2);
+        }
+        if ($joinTable2 && $joinColumn3 && $joinColumn4) {
+            $query->join($joinTable2, $joinColumn3, '=', $joinColumn4);
+        }
+        if ($joinTable3 && $joinColumn5 && $joinColumn6) {
+            $query->join($joinTable3, $joinColumn5, '=', $joinColumn6);
         }
         return $query->get();
     }

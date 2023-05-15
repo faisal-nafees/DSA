@@ -19,7 +19,6 @@
                                 @csrf
                                 <div class="row align-items-end">
                                     <div class="col-sm-2">
-                                        <!-- select -->
                                         <div class="form-group">
                                             <label for="enqtype_id" class="col-form-label">Enquiry Type</label>
                                             <select name="enqtype_id" class="custom-select">
@@ -30,7 +29,6 @@
                                                 @endforeach
                                             </select>
                                         </div>
-
                                     </div>
                                     <div class="form-group  col-md-2">
                                         <label for="start_date" class="col-form-label">To</label>
@@ -68,10 +66,9 @@
                                         <th class="exclude-columns">Followup</th>
                                         <th>Full Name</th>
                                         <th>Contact</th>
-                                        {{-- <th>Mobile</th>
-                                        <th>Whatsapp</th> --}}
+                                        <th>Additonal Info</th>
                                         <th>Address</th>
-                                        <th>City</th>
+                                        <th>Created By</th>
                                         <th>Date</th>
                                         <th>status</th>
                                         <th class="exclude-columns">Action</th>
@@ -96,12 +93,17 @@
                                             </td>
                                             <td>
                                                 <p class="mb-0"><strong>Email: </strong>{{ $enquiry->email }}</p>
-                                                <p class="mb-0"><strong>Mobile: </strong>{{ $enquiry->mobile }}</p>
+                                                <p class="mb-0"><strong>Mobile: </strong>{{ $enquiry->primary_mobile }}
+                                                </p>
+                                                <p class="mb-0"><strong>Alternate Mobile:
+                                                    </strong>{{ @$enquiry->alternate_mobile }}
+                                                </p>
                                                 <p class="mb-0"><strong>Whatsapp: </strong>{{ $enquiry->whatsapp }}</p>
                                             </td>
+                                            <td>{{ $enquiry->additional_info }}</td>
                                             <td>{{ $enquiry->address }}</td>
-                                            <td>{{ $enquiry->city }} {{ $enquiry->status_id }}</td>
-                                            <td>{{ date('Y-m-d', strtotime($enquiry->created_at)) }}</td>
+                                            <td>{{ $enquiry->firstname . ' ' . $enquiry->lastname }}</td>
+                                            <td>{{ $enquiry->enquiry_date }}</td>
                                             <td
                                                 class="{{ $enquiry->status_id === 1 ? 'text-success' : ($enquiry->status_id === 2 ? 'text-warning' : ($enquiry->status_id === 3 ? 'text-danger' : 'text-primary')) }}">
                                                 {{ $enquiry->status_name }}</td>

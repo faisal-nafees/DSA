@@ -12,7 +12,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('tbl_reporting', function (Blueprint $table) {
-            $table->id();
+            $table->id('reporting_id');
+            $table->integer('task_id')->nullable();
+            $table->integer('report_status_id')->nullable();
+            $table->text('report_description')->nullable();
+            $table->string('remark', 255)->nullable();
+            $table->string('report_date', 50)->nullable();
+            $table->string('start_task', 50)->nullable();
+            $table->string('end_task', 50)->nullable();
+            $table->string('attachment', 255)->nullable();
             $table->timestamps();
         });
     }

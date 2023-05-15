@@ -160,17 +160,12 @@
     <!-- AdminLTE App -->
     <script src="{{ asset('assets/js/adminlte.min.js') }}"></script>
 
-
-
-
-
-
     <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
-    <script>
+    {{-- <script>
         $.widget.bridge('uibutton', $.ui.button)
-    </script>
+    </script> --}}
     <!-- overlayScrollbars -->
-    <script src="plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
+    <script src="{{ asset('assets/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js') }}"></script>
 </body>
 
 </html>

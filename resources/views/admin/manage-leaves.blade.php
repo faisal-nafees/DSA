@@ -18,6 +18,19 @@
                             <form action="{{ route('leave.manage') }}" method="POST">
                                 @csrf
                                 <div class="row align-items-end">
+                                    <div class="col-sm-2">
+                                        <div class="form-group">
+                                            <label for="user_id" class="col-form-label">Staff Name</label>
+                                            <select name="user_id" class="custom-select">
+                                                <option value="">Select Staff</option>
+                                                @foreach ($users as $user)
+                                                    <option value="{{ $user->user_id }}">
+                                                        {{ $user->firstname . $user->lastname . ' (' . $user->role_name . ')' }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
 
                                     <div class="form-group  col-md-2">
                                         <label for="start_date" class="col-form-label">To</label>
@@ -47,6 +60,8 @@
                             <table id="leavesTable" class="table table-bordered table-hover">
                                 <thead>
                                     <tr>
+                                        <td>Action</td>
+                                        <td>Username</td>
                                         <th>Leave Type</th>
                                         <th>Subject</th>
                                         <th>Reason</th>
@@ -57,43 +72,27 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {{-- @foreach ($enquiries as $enquiry)
+                                    @foreach ($leaves as $leave)
                                         <tr>
-                                            <td>{{ $enquiry->enqtype_name }}</td>
-                                            <td>
-                                                <a href="#" class="cursor-pointer text-primary"
-                                                    onclick="addFollowup({{ $enquiry->enq_id }})">
-                                                    <i class="fas fa-plus pe-1"></i><span>Add</span>
-                                                </a><br>
-                                                <a href="#" class="cursor-pointer text-success"
-                                                    onclick="viewFollowup({{ $enquiry->enq_id }})">
-                                                    <i class="fas fa-eye pe-1"></i>View
-                                                </a>
-
-                                            </td>
-                                            <td>{{ $enquiry->fullname }}
+                                            <td class="text-center"><a
+                                                    href="{{ route('leave.edit', ['id' => $leave->leave_id]) }}"><i
+                                                        class='fas fa-pen'></i></a></td>
+                                            <td>{{ $leave->firstname . ' ' . $leave->lastname }}</td>
+                                            <td>{{ $leave->type }}</td>
+                                            <td>{{ $leave->subject }}
                                             </td>
                                             <td>
-                                                <p class="mb-0"><strong>Email: </strong>{{ $enquiry->email }}</p>
-                                                <p class="mb-0"><strong>Mobile: </strong>{{ $enquiry->mobile }}</p>
-                                                <p class="mb-0"><strong>Whatsapp: </strong>{{ $enquiry->whatsapp }}</p>
+                                                {{ $leave->reason }}
                                             </td>
-                                            <td>{{ $enquiry->address }}</td>
-                                            <td>{{ $enquiry->city }} {{ $enquiry->status_id }}</td>
-                                            <td>{{ date('Y-m-d', strtotime($enquiry->created_at)) }}</td>
+                                            <td>{{ $leave->leave_start }}</td>
+                                            <td>{{ $leave->leave_end }}</td>
                                             <td
-                                                class="{{ $enquiry->status_id === 1 ? 'text-success' : ($enquiry->status_id === 2 ? 'text-warning' : ($enquiry->status_id === 3 ? 'text-danger' : 'text-primary')) }}">
-                                                {{ $enquiry->status_name }}</td>
-                                            <td>
-                                                <a href="{{ route('enquiry.edit', ['id' => $enquiry->enq_id]) }}"><i
-                                                        class='fas fa-pen 2x mr-4'></i></a>
-                                                <a href="{{ route('enquiry.delete', ['id' => $enquiry->enq_id]) }}"
-                                                    onclick="return confirm('Are you sure you want to delete this enquiry?')">
-                                                    <i class='fas fa-trash-alt text-danger'></i></a>
+                                                class="{{ $leave->leave_status_name == 'Approved' ? 'text-success' : ($leave->leave_status_name == 'Canceled' ? 'text-danger' : '') }}">
+                                                {{ $leave->leave_status_name }}</td>
+                                            <td>{{ date('Y-m-d', strtotime($leave->created_at)) }}</td>
 
-                                            </td>
                                         </tr>
-                                    @endforeach --}}
+                                    @endforeach
                                 </tbody>
 
                             </table>

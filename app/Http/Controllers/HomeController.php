@@ -30,24 +30,12 @@ class HomeController extends Controller
         return view('admin.dashboard', compact(['enquiries', 'contacts']));
     }
 
-    public function reporting()
-    {
-        return view('admin.reporting');
-    }
 
-    public function leaves()
-    {
-        return view('admin.leaves');
-    }
+
+
 
     public function attendance()
     {
         return view('admin.attendance');
-    }
-
-
-    public function addLeave()
-    {
-        return view('admin.add-leave');
     }
 }

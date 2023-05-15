@@ -17,7 +17,7 @@ class UsersController extends Controller
     {
         $model = new Common_model();
         if (request()->isMethod('post')) {
-            $users = $model->search_data('tbl_users', null, $request->start_date, $request->end_date, null,  'tbl_roles', 'tbl_users.role_id', 'tbl_roles.role_id');
+            $users = $model->search_data('tbl_users', null, $request->start_date, $request->end_date, null, null,  'tbl_roles', 'tbl_users.role_id', 'tbl_roles.role_id');
             return view('admin.manage-user', compact(['users']));
         }
         $users = $model->fetch_data('tbl_users', 'tbl_roles', 'tbl_users.role_id', 'tbl_roles.role_id');
@@ -101,6 +101,7 @@ class UsersController extends Controller
             $user = $model->fetch_where('tbl_users', 'user_id', $id);
             $username = $user->firstname . '_' . $user->lastname;
             $dataArray = $request->all();
+            // return $dataArray;
 
             // Get the user ID and previous image path
 
@@ -182,11 +183,9 @@ class UsersController extends Controller
             }
         } else {
             $user = $model->fetch_where('tbl_users', 'user_id', $id, 'tbl_roles', 'tbl_users.role_id', 'tbl_roles.role_id');
-            $roles = $model->fetch_data('tbl_roles');
             return view('admin.edit-user', compact(['user', 'roles']));
         }
     }
-
 
     public function delete($id)
     {
@@ -211,8 +210,7 @@ class UsersController extends Controller
         $model = new Common_model();
         if (request()->isMethod('post')) {
             $dataArray = $request->all();
-
-            if ($model->edit_data('tbl_users', 'user_id', $user->id, $dataArray)) {
+            if ($model->edit_data('tbl_users', 'user_id', $user->user_id, $dataArray)) {
                 return back()->with('success', 'Profile updated successfully');
             } else {
                 return back()->with('error', 'Error while updating profile');

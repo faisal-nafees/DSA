@@ -19,19 +19,19 @@ class ContactsController extends Controller
 
     public function sendMail(Request $request)
     {
+        // dd($request);
         $recipientEmail = 'mofaisal739@gmail.com';
+        $dataArray = $request->all();
 
         try {
-            Mail::to($recipientEmail)->send(new ContactMail());
+            Mail::to($recipientEmail)->send(new ContactMail);
         } catch (Exception $e) {
-            dd($e);
+            return response($e);
             // Log the error or display a custom error message
             // For debugging purposes, you can also dump the exception using `dd($e)` to see the full error details
         }
-        return 1;
         $model = new Common_model();
 
-        $dataArray = $request->all();
         if ($model->insert_data('tbl_contact_reply', $dataArray)) {
             return response('Message send successfully');
         } else {

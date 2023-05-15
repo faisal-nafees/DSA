@@ -4,13 +4,20 @@
     @include('admin.alerts')
 
     <section class="content pt-3">
+        @if (!$today_report)
+            <div class="m-2 alert alert-danger">
+                Please submit your todays reportiong of your total worked hours.
+            </div>
+        @endif
+
         <div class="card card-info mx-2">
             <div class="card-header">
                 <h3 class="card-title">Daily Reporting</h3>
             </div>
             <!-- /.card-header -->
             <!-- form start -->
-            <form id="addEnquiryForm" class="form-horizontal" method="POST">
+            <form id="addReportForm" action="{{ route('report.add') }}" class="form-horizontal" enctype="multipart/form-data"
+                method="POST">
                 @csrf
 
                 <div class="card-body">
@@ -21,72 +28,70 @@
 
                                 <select class="form-control custom-select" name="task_id" id="task_id">
                                     <option disabled selected>Select task</option>
-                                    <option>Task 1</option>
-                                    <option>Task 2</option>
-                                    <option>Task 3</option>
-
+                                    @foreach ($tasks as $task)
+                                        <option value="{{ $task->task_id }}">{{ $task->title }}</option>
+                                    @endforeach
                                 </select>
                             </div>
                         </div>
                         <div class="form-group col-md-3">
-                            <label for="task_title" class="col-sm-12 col-form-label">Report Description</label>
+                            <label for="report_description" class="col-sm-12 col-form-label">Report Description</label>
                             <div class="col-sm-12 err_msg">
-                                <textarea rows="2" class="form-control" name="description" id="description" placeholder="Enter Description"></textarea>
+                                <textarea rows="2" class="form-control" name="report_description" id="report_description"
+                                    placeholder="Enter Description"></textarea>
                             </div>
                         </div>
                         <div class="form-group col-md-3">
-                            <label for="description" class="col-sm-12 col-form-label">Report Remark</label>
+                            <label for="remark" class="col-sm-12 col-form-label">Report Remark</label>
                             <div class="col-sm-12 err_msg">
-                                <textarea rows="2" class="form-control" name="description" id="description" placeholder="Enter Description"></textarea>
+                                <textarea rows="2" class="form-control" name="remark" id="remark" placeholder="Enter Remark"></textarea>
                             </div>
                         </div>
                         <div class="form-group col-md-3">
-                            <label for="assigned_date" class="col-sm-12 col-form-label">Report Date</label>
+                            <label for="report_date" class="col-sm-12 col-form-label">Report Date</label>
                             <div class="col-sm-12 err_msg">
-                                <input type="date" class="form-control" name="assigned_date" id="assigned_date"
-                                    placeholder="assigned_date">
+                                <input type="date" class="form-control" name="report_date" id="report_date"
+                                    placeholder="report_date">
                             </div>
                         </div>
                     </div>
 
-
                     <div class="row">
                         <div class="form-group col-md-2">
-                            <label for="assigned_date" class="col-sm-12 col-form-label">Start Task</label>
+                            <label for="start_task" class="col-sm-12 col-form-label">Start Task</label>
                             <div class="col-sm-12 err_msg">
-                                <input type="time" class="form-control" name="assigned_date" id="assigned_date"
-                                    placeholder="assigned_date">
+                                <input type="time" class="form-control" name="start_task" id="start_task"
+                                    placeholder="start_task">
                             </div>
                         </div>
                         <div class="form-group col-md-2">
-                            <label for="assigned_time" class="col-sm-12 col-form-label">End Task</label>
+                            <label for="end_task" class="col-sm-12 col-form-label">End Task</label>
                             <div class="col-sm-12 err_msg">
-                                <input type="time" class="form-control" name="assigned_time" id="assigned_time"
-                                    placeholder="assigned_time">
-                            </div>
-                        </div>
-                        <div class="form-group col-md-2">
-                            <label for="attachment_1" class="col-sm-12 col-form-label">Report Attachment</label>
-                            <div class="col-sm-12 err_msg">
-                                <input type="file" class="form-control" name="attachment_1" id="attachment_1"
-                                    value="{{ old('attachment_1') }}" placeholder="Enter Adhaar Card No.">
+                                <input type="time" class="form-control" name="end_task" id="end_task"
+                                    placeholder="end_task">
                             </div>
                         </div>
                         <div class="form-group col-md-3">
-                            <label for="task_id" class="col-sm-12 col-form-label">Report Status</label>
+                            <label for="attachment" class="col-sm-12 col-form-label">Report Attachment</label>
+                            <div class="col-sm-12 err_msg">
+                                <input type="file" class="form-control" name="attachment" id="attachment">
+                            </div>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label for="report_status_id" class="col-sm-12 col-form-label">Report Status</label>
                             <div class="col-sm-12 err_msg">
 
-                                <select class="form-control custom-select" name="task_id" id="task_id">
+                                <select class="form-control custom-select" name="report_status_id" id="report_status_id">
                                     <option disabled selected>Select Status</option>
-                                    <option>In progress</option>
-                                    <option>Completed</option>
-                                    <option>Pending</option>
-                                    <option>Hold</option>
-                                    <option>Cancelled</option>
+                                    @foreach ($report_status as $status)
+                                        @if ($status->status_id !== 1)
+                                            <option value="{{ $status->status_id }}">{{ $status->status_name }}</option>
+                                        @endif
+                                    @endforeach
                                 </select>
                             </div>
                         </div>
-                        <div class="form-group col-md-3 d-flex align-items-end">
+                        <div class="form-group col-md-2 d-flex align-items-end">
                             <button type="submit" class="btn btn-primary">Submit Report</button>
 
                         </div>
@@ -106,36 +111,59 @@
                         </div>
                         <!-- /.card-header -->
                         <div class="card-body">
+                            <div class="row">
+                                <form action="{{ route('reporting') }}" method="POST" class="col-md-10">
+                                    @csrf
+                                    <div class="row align-items-end">
+                                        <div class="col-sm-3">
+                                            <div class="form-group">
+                                                <label for="user_id" class="col-form-label">Staff Name</label>
+                                                <select name="user_id" class="custom-select">
+                                                    <option value="">Select Staff</option>
+                                                    @foreach ($users as $user)
+                                                        <option value="{{ $user->user_id }}">
+                                                            {{ $user->firstname . $user->lastname . ' (' . $user->role_name . ')' }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
 
-                            <form action="{{ route('reporting') }}" method="POST">
-                                @csrf
-                                <div class="row align-items-end">
+                                        <div class="form-group  col-md-2">
+                                            <label for="start_date" class="col-form-label">To</label>
 
-                                    <div class="form-group  col-md-2">
-                                        <label for="start_date" class="col-form-label">To</label>
+                                            <input type="date" class="form-control" name="start_date"
+                                                id="start_date">
 
-                                        <input type="date" class="form-control" name="start_date" id="start_date">
+                                        </div>
+                                        <div class="form-group  col-md-2">
+                                            <label for="end_date" class="col-form-label">From</label>
 
+                                            <input type="date" class="form-control" name="end_date" id="end_date">
+
+                                        </div>
+                                        <div class="form-group  col-md-2">
+                                            <button type="submit" class="btn w-100 btn-outline-success">Submit</button>
+                                        </div>
+                                        <div class="form-group  col-md-1">
+                                            <button type="button" onclick="reset(this)"
+                                                class="btn btn-outline-secondary">Reset</button>
+                                        </div>
+                                        <div class="form-group  col-md-1">
+                                            <a href="{{ route('reporting') }}" class="btn btn-light"><i
+                                                    class="fas fa-sync fa-lg px-2"></i></a>
+                                        </div>
                                     </div>
-                                    <div class="form-group  col-md-2">
-                                        <label for="end_date" class="col-form-label">From</label>
-
-                                        <input type="date" class="form-control" name="end_date" id="end_date">
-
-                                    </div>
-                                    <div class="form-group  col-md-2">
-                                        <button type="submit" class="btn btn-outline-success">Submit</button>
-                                    </div>
-                                    <div class="form-group  col-md-2">
-                                        <button type="button" onclick="reset(this)"
-                                            class="btn btn-outline-secondary">Reset</button>
-                                    </div>
-                                    <div class="form-group  col-md-2">
-                                        <a href="{{ route('reporting') }}" class="btn btn-light"><i
-                                                class="fas fa-sync fa-lg px-2"></i></a>
-                                    </div>
+                                </form>
+                                <div class="custom-control custom-checkbox col-md-2 align-self-center">
+                                    <form action="{{ route('report.today') }}" method="POST" id="todayReport">
+                                        @csrf
+                                        <input class="custom-control-input" type="checkbox" id="todayReportCheckbox">
+                                        <label for="todayReportCheckbox" class="custom-control-label">Todays
+                                            Report</label>
+                                    </form>
                                 </div>
-                            </form>
+                            </div>
                             <table id="leavesTable" class="table table-bordered table-hover">
                                 <thead>
                                     <tr>
@@ -149,43 +177,24 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {{-- @foreach ($enquiries as $enquiry)
+                                    @foreach ($reports as $report)
                                         <tr>
-                                            <td>{{ $enquiry->enqtype_name }}</td>
+                                            <td>{{ $report->firstname . ' ' . $report->lastname }}</td>
+                                            <td>{{ $report->report_date }} <br>
+                                                {{ $report->start_task . '-' . $report->end_task }}
+                                            </td>
+                                            <td>{{ $report->title }}</td>
+                                            <td>{{ $report->report_description }}</td>
+                                            <td>{{ $report->remark }}</td>
                                             <td>
-                                                <a href="#" class="cursor-pointer text-primary"
-                                                    onclick="addFollowup({{ $enquiry->enq_id }})">
-                                                    <i class="fas fa-plus pe-1"></i><span>Add</span>
-                                                </a><br>
-                                                <a href="#" class="cursor-pointer text-success"
-                                                    onclick="viewFollowup({{ $enquiry->enq_id }})">
-                                                    <i class="fas fa-eye pe-1"></i>View
-                                                </a>
-
+                                                @if ($report->attachment)
+                                                    <a href="/storage/{{ $report->attachment }}"
+                                                        target="blank">Attachment</a>
+                                                @endif
                                             </td>
-                                            <td>{{ $enquiry->fullname }}
-                                            </td>
-                                            <td>
-                                                <p class="mb-0"><strong>Email: </strong>{{ $enquiry->email }}</p>
-                                                <p class="mb-0"><strong>Mobile: </strong>{{ $enquiry->mobile }}</p>
-                                                <p class="mb-0"><strong>Whatsapp: </strong>{{ $enquiry->whatsapp }}</p>
-                                            </td>
-                                            <td>{{ $enquiry->address }}</td>
-                                            <td>{{ $enquiry->city }} {{ $enquiry->status_id }}</td>
-                                            <td>{{ date('Y-m-d', strtotime($enquiry->created_at)) }}</td>
-                                            <td
-                                                class="{{ $enquiry->status_id === 1 ? 'text-success' : ($enquiry->status_id === 2 ? 'text-warning' : ($enquiry->status_id === 3 ? 'text-danger' : 'text-primary')) }}">
-                                                {{ $enquiry->status_name }}</td>
-                                            <td>
-                                                <a href="{{ route('enquiry.edit', ['id' => $enquiry->enq_id]) }}"><i
-                                                        class='fas fa-pen 2x mr-4'></i></a>
-                                                <a href="{{ route('enquiry.delete', ['id' => $enquiry->enq_id]) }}"
-                                                    onclick="return confirm('Are you sure you want to delete this enquiry?')">
-                                                    <i class='fas fa-trash-alt text-danger'></i></a>
-
-                                            </td>
+                                            <td>{{ $report->status_name }}</td>
                                         </tr>
-                                    @endforeach --}}
+                                    @endforeach
                                 </tbody>
 
                             </table>
@@ -216,6 +225,72 @@
                 "responsive": true,
                 "searching": false,
             })
+
+            $('#addReportForm').validate({
+                rules: {
+                    task_id: {
+                        required: true,
+                    },
+                    report_description: {
+                        required: true,
+                    },
+                    report_status_id: {
+                        required: true,
+                    },
+                    report_date: {
+                        required: true,
+                    },
+                    start_task: {
+                        required: true,
+                    },
+                    end_task: {
+                        required: true
+                    }
+                },
+                messages: {
+                    user_id: {
+                        required: "Please Choose Task",
+                    },
+                    report_description: {
+                        required: "Please Enter Description",
+                    },
+                    report_status_id: {
+                        required: "Please Enter Description",
+                    },
+                    report_date: {
+                        required: "Please Enter Report Date",
+                    },
+                    start_task: {
+                        required: "Please  Enter Start Task",
+                    },
+                    end_task: {
+                        required: "Please  Enter End Task",
+                    }
+                },
+                errorElement: 'span',
+                errorPlacement: function(error, element) {
+                    error.addClass('invalid-feedback');
+                    element.closest('.err_msg').append(error);
+                },
+                highlight: function(element, errorClass, validClass) {
+                    $(element).addClass('is-invalid');
+                },
+                unhighlight: function(element, errorClass, validClass) {
+                    $(element).removeClass('is-invalid');
+                }
+            });
+        });
+    </script>
+    <script>
+        $(document).ready(function() {
+            // Add event listener for checkbox change
+            $('#todayReportCheckbox').change(function() {
+                // Check if the checkbox is selected
+                if ($(this).is(':checked')) {
+                    // Submit the form
+                    $('#todayReport').submit();
+                }
+            });
         });
     </script>
 @endsection

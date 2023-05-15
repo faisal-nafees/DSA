@@ -4,94 +4,127 @@
     <ol class="breadcrumb blue-grey lighten-4">
         <li class="breadcrumb-item"><a class="black-text" href="{{ route('task.manage') }}">Manage Tasks</a><i
                 class="fa fa-angle-double-right mx-2" aria-hidden="true"></i></li>
-        <li class="breadcrumb-item active">Add Task</li>
+        <li class="breadcrumb-item active">Edit Task</li>
     </ol>
     <div class="card card-info mx-4">
         <div class="card-header">
-            <h3 class="card-title">Add Task</h3>
+            <h3 class="card-title">Edit Task</h3>
         </div>
         <!-- /.card-header -->
         <!-- form start -->
-        <form id="addTaskForm" class="form-horizontal" action="{{ route('task.add') }}" method="POST"
-            enctype="multipart/form-data">
+        <form id="editTaskForm" action="{{ route('task.edit', ['id' => $task->task_id]) }}" class="form-horizontal"
+            method="POST" enctype="multipart/form-data">
             @csrf
 
             <div class="card-body">
                 <div class="row">
+
                     <div class="form-group col-md-6">
-                        <label for="user_id" class="col-sm-12 col-form-label">Staff Name</label>
+                        <label for="title" class="col-sm-12 col-form-label">Task Status</label>
+                        <div class="col-sm-12 err_msg">
+                            <input type="text" class="form-control" name="title" id="title"
+                                value="{{ old('title', $task->title) }}" placeholder="Enter Task Title">
+                        </div>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="user_id" class="col-sm-12 col-form-label">Task Status</label>
                         <div class="col-sm-12 err_msg">
 
                             <select class="form-control custom-select" name="user_id" id="user_id">
-                                <option value="">Select Staff Name</option>
-                                @foreach ($users as $user)
-                                    <option value="{{ $user->user_id }}">
-                                        {{ $user->firstname . ' ' . $user->lastname . ' ' . '(' . $user->role_name . ')' }}
-                                    </option>
+                                <option value="">Select Task Status</option>
+                                @foreach ($report_status as $status)
+                                    <option value="{{ $status->status_id }}"
+                                        {{ $status->status_id === $task->report_status_id ? 'selected' : '' }}>
+                                        {{ $status->status_name }}</option>
                                 @endforeach
 
                             </select>
                         </div>
                     </div>
-                    <div class="form-group col-md-6">
-                        <label for="title" class="col-sm-12 col-form-label">Task Title</label>
-                        <div class="col-sm-12 err_msg">
-                            <input type="text" class="form-control" name="title" id="title"
-                                placeholder="Enter Task Title">
-                        </div>
-                    </div>
+
                 </div>
 
                 <div class="row">
                     <div class="form-group col-md-6">
                         <label for="description" class="col-sm-12 col-form-label">Description</label>
                         <div class="col-sm-12 err_msg">
-                            <textarea rows="2" class="form-control" name="description" id="description" placeholder="Enter Description"></textarea>
+                            <textarea rows="3" class="form-control" name="description" id="description" placeholder="Enter Description">{{ $task->description }}</textarea>
                         </div>
                     </div>
-                    <div class="form-group col-md-3">
-                        <label for="attachment_1" class="col-sm-12 col-form-label">Attachment 1</label>
-                        <div class="col-sm-12 err_msg">
-                            <input type="file" class="form-control" name="attachment_1" id="attachment_1"
-                                value="{{ old('attachment_1') }}">
+                    <div class="form-group row col-md-6">
+                        <div class="form-group col-md-6">
+                            <label for="attachment_1" class="col-sm-12 col-form-label">Attachment 1</label>
+                            <div class="col-sm-12 err_msg">
+                                <input type="file" class="form-control" name="attachment_1" id="attachment_1"
+                                    value="{{ old('attachment_1') }}">
+                            </div>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="attachment_2" class="col-sm-12 col-form-label">Attachment 2</label>
+                            <div class="col-sm-12 err_msg">
+                                <input type="file" class="form-control" name="attachment_2" id="attachment_2"
+                                    value="{{ old('attachment_2') }}">
+                            </div>
+                        </div>
+                        <div class="form-group col-md-6">
+                            @if ($task->attachment_1)
+                                <label for="attachment_1" class="col-form-label"><a
+                                        href="/storage/{{ $task->attachment_1 }}" target="blank" class="btn btn-info">Show
+                                        Attachment 1</a>
+                                </label>
+                            @else
+                                <label for="" class="col-form-label">
+                                    <span class="btn btn-secondary">No Attachment 1</span>
+                                </label>
+                            @endif
+                        </div>
+                        <div class="form-group col-md-6">
+                            @if ($task->attachment_2)
+                                <label for="attachment_2" class="col-form-label"><a
+                                        href="/storage/{{ $task->attachment_2 }}" target="blank" class="btn btn-info">Show
+                                        Attachment 2</a>
+                                </label>
+                            @else
+                                <label for="" class="col-form-label">
+                                    <span class="btn btn-secondary">No Attachment 2</span>
+                                </label>
+                            @endif
                         </div>
                     </div>
-                    <div class="form-group col-md-3">
-                        <label for="attachment_2" class="col-sm-12 col-form-label">Attachment 2</label>
-                        <div class="col-sm-12 err_msg">
-                            <input type="file" class="form-control" name="attachment_2" id="attachment_2"
-                                value="{{ old('attachment_2') }}">
-                        </div>
-                    </div>
+
                 </div>
 
                 <div class="row">
                     <div class="form-group col-md-3">
                         <label for="assigned_date" class="col-sm-12 col-form-label">Assigned Date</label>
                         <div class="col-sm-12 err_msg">
-                            <input type="date" class="form-control" name="assigned_date" id="assigned_date"
-                                placeholder="assigned_date">
+                            <input type="date" class="form-control"
+                                value="{{ old('assigned_date', $task->assigned_date) }}" name="assigned_date"
+                                id="assigned_date">
                         </div>
                     </div>
                     <div class="form-group col-md-3">
                         <label for="assigned_time" class="col-sm-12 col-form-label">Assigned Time</label>
                         <div class="col-sm-12 err_msg">
-                            <input type="time" class="form-control" name="assigned_time" id="assigned_time"
-                                placeholder="assigned_time">
+                            <input type="time" class="form-control"
+                                value="{{ old('assigned_time', $task->assigned_time) }}" name="assigned_time"
+                                id="assigned_time">
                         </div>
                     </div>
                     <div class="form-group col-md-3">
                         <label for="estimate_date" class="col-sm-12 col-form-label">Estimate date</label>
                         <div class="col-sm-12 err_msg">
-                            <input type="date" class="form-control" name="estimate_date" id="estimate_date"
-                                placeholder="estimate_date">
+                            <input type="date" class="form-control"
+                                value="{{ old('estimate_date', $task->estimate_date) }}" name="estimate_date"
+                                id="estimate_date">
                         </div>
                     </div>
                     <div class="form-group col-md-3">
                         <label for="estimate_time" class="col-sm-12 col-form-label">Estimate Time</label>
                         <div class="col-sm-12 err_msg">
-                            <input type="time" class="form-control" name="estimate_time" id="estimate_time"
-                                placeholder="estimate_time">
+                            <input type="time" class="form-control"
+                                value="{{ old('estimate_time', $task->estimate_time) }}" name="estimate_time"
+                                id="estimate_time">
                         </div>
                     </div>
                 </div>
@@ -104,7 +137,7 @@
             <!-- /.card-body -->
             <div class="card-footer">
                 <a href="{{ route('task.manage') }}" class="btn btn-warning">Cancel</a>
-                <button type="submit" class="btn btn-info float-right">Add Task</button>
+                <button type="submit" class="btn btn-info float-right">Edit Task</button>
             </div>
             <!-- /.card-footer -->
         </form>
@@ -114,11 +147,8 @@
 @section('scripts')
     <script>
         $(function() {
-            $('#addTaskForm').validate({
+            $('#editTaskForm').validate({
                 rules: {
-                    user_id: {
-                        required: true,
-                    },
                     title: {
                         required: true,
                     },
@@ -139,9 +169,6 @@
                     }
                 },
                 messages: {
-                    user_id: {
-                        required: "Please Choose Staff Name",
-                    },
                     title: {
                         required: "Please Enter Task Title",
                     },
