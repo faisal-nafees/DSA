@@ -92,6 +92,15 @@ class TaskController extends Controller
             }
 
             if ($model->edit_data('tbl_task', 'task_id', $id, $dataArray)) {
+                $authUser = auth()->user()->firstname . ' ' . auth()->user()->lastname;
+                $data = [
+                    'type' => 'Edit',
+                    'module' => 'Task',
+                    'username' => $authUser
+                ];
+                Mail::send('emails.CrudNotification', $data, function ($message) use ($authUser) {
+                    $message->to(env('MAIL_TO_ADDRESS'))->subject($authUser . "Edit a Task");
+                });
                 return redirect('/manage-tasks')->with('success', 'Task updated successfully');
             } else {
                 return redirect('/manage-tasks')->with('error', 'Error while updating task');
@@ -107,7 +116,17 @@ class TaskController extends Controller
     public function delete($id)
     {
         $model = new Common_model();
+
         if ($model->delete_data('tbl_task', 'task_id', $id)) {
+            $authUser = auth()->user()->firstname . ' ' . auth()->user()->lastname;
+            $data = [
+                'type' => 'Delete',
+                'module' => 'Task',
+                'username' => $authUser
+            ];
+            Mail::send('emails.CrudNotification', $data, function ($message) use ($authUser) {
+                $message->to(env('MAIL_TO_ADDRESS'))->subject($authUser . "Delete a Task");
+            });
             return redirect('/manage-tasks')->with('message', 'Task deleted successfully');
         }
     }
@@ -117,7 +136,7 @@ class TaskController extends Controller
         $model = new Common_model();
         $currentDate = Carbon::now()->toDateString();
         $users = $model->fetch_data('tbl_users', 'tbl_roles', 'tbl_users.role_id', 'tbl_roles.role_id');
-        $tasks = $model->search_today('tbl_task', $currentDate, 'assigned_date',  'tbl_users', 'tbl_task.user_id', 'tbl_users.user_id', 'tbl_report_status', 'tbl_task.report_status_id', 'tbl_report_status.status_id');
+        $tasks = $model->search_today('tbl_task', $currentDate, 'assigned_date', null, null,  'tbl_users', 'tbl_task.user_id', 'tbl_users.user_id', 'tbl_report_status', 'tbl_task.report_status_id', 'tbl_report_status.status_id');
         return view('admin.manage-tasks', compact(['users', 'tasks']));
     }
 

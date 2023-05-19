@@ -14,19 +14,6 @@
                             <form action="{{ route('contact.manage') }}" method="POST">
                                 @csrf
                                 <div class="row align-items-end">
-                                    {{-- <div class="col-sm-2">
-                                        <!-- select -->
-                                        <div class="form-group">
-                                            <select name="enqtype_id" class="custom-select">
-                                                <option value="">Enquiry Type</option>
-                                                @foreach ($enq_type as $type)
-                                                    <option value="{{ $type->enqtype_id }}">{{ $type->enqtype_name }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-
-                                    </div> --}}
                                     <div class="form-group  col-md-2">
                                         <label for="start_date" class="col-form-label">To</label>
 
@@ -78,7 +65,8 @@
                                             <td>{{ date('Y-m-d', strtotime($contact->created_at)) }}</td>
 
                                             <td>
-                                                <button onclick="reply({{ $contact->contact_id }}) "
+                                                <button
+                                                    onclick="reply('{{ $contact->contact_id }}','{{ $contact->email }}') "
                                                     class="btn btn-success">Reply</button>
                                             </td>
                                         </tr>
@@ -185,6 +173,7 @@
                         },
                         data: {
                             contact_id: $id,
+                            email: $email,
                             comment: comment // Include the comment value in the data
                         },
                         success: function(data) {
@@ -213,9 +202,12 @@
 
         });
 
-        function reply(e) {
+        function reply(id, email) {
             $('#openModal').click();
-            $id = e;
+            $id = id;
+            $email = email;
+            // console.log(id);
+            // console.log(email);
         }
     </script>
 @endsection

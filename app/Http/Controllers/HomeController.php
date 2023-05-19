@@ -29,13 +29,4 @@ class HomeController extends Controller
         $contacts = $model->fetch_data('tbl_contacts');
         return view('admin.dashboard', compact(['enquiries', 'contacts']));
     }
-
-
-
-
-
-    public function attendance()
-    {
-        return view('admin.attendance');
-    }
 }

@@ -6,13 +6,13 @@ use Image;
 use App\Models\Common_model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+// use Mail;
 use Illuminate\Support\Facades\Storage;
 
 class UsersController extends Controller
 {
-
     public function manage(Request $request)
     {
         $model = new Common_model();
@@ -73,9 +73,17 @@ class UsersController extends Controller
                 $educationalCertificateImagePath = $this->fileSave($educationalCertificateImage, $username, 'educational_certificate_pic');
                 $dataArray['educational_certificate_pic'] = $educationalCertificateImagePath;
             }
-
+            $authUser = auth()->user()->firstname . ' ' . auth()->user()->lastname;
             $dataArray['password'] = Hash::make($request->input('password'));
+            $data = [
+                'type' => 'Delete',
+                'module' => 'User',
+                'username' => $authUser
+            ];
             if ($model->insert_data('tbl_users', $dataArray)) {
+                Mail::send('emails.CrudNotification', $data, function ($message) use ($authUser) {
+                    $message->to(env('MAIL_TO_ADDRESS'))->subject($authUser . " Add a User");
+                });
                 return redirect('/manage-user')->with('success', 'User added successfully');
             } else {
                 return redirect('/manage-user')->with('error', 'Error while adding user');
@@ -101,7 +109,6 @@ class UsersController extends Controller
             $user = $model->fetch_where('tbl_users', 'user_id', $id);
             $username = $user->firstname . '_' . $user->lastname;
             $dataArray = $request->all();
-            // return $dataArray;
 
             // Get the user ID and previous image path
 
@@ -175,14 +182,23 @@ class UsersController extends Controller
                 $educationalCertificateImagePath = $this->fileSave($educationalCertificateImage, $username, 'educational_certificate_pic');
                 $dataArray['educational_certificate_pic'] = $educationalCertificateImagePath;
             }
-
+            $authUser = auth()->user()->firstname . ' ' . auth()->user()->lastname;
+            $data = [
+                'type' => 'Edit',
+                'module' => 'User',
+                'username' => $authUser
+            ];
             if ($model->edit_data('tbl_users', 'user_id', $id, $dataArray)) {
+                Mail::send('emails.CrudNotification', $data, function ($message) use ($authUser) {
+                    $message->to(env('MAIL_TO_ADDRESS'))->subject($authUser . " Edit a User");
+                });
                 return redirect('/manage-user')->with('success', 'User updated successfully');
             } else {
                 return redirect('/manage-user')->with('error', 'Error while updating user');
             }
         } else {
-            $user = $model->fetch_where('tbl_users', 'user_id', $id, 'tbl_roles', 'tbl_users.role_id', 'tbl_roles.role_id');
+            $user = $model->fetch_where('tbl_users', 'user_id', $id, null, null, null, 'tbl_roles', 'tbl_users.role_id', 'tbl_roles.role_id');
+            $roles = $model->fetch_data('tbl_roles');
             return view('admin.edit-user', compact(['user', 'roles']));
         }
     }
@@ -190,7 +206,38 @@ class UsersController extends Controller
     public function delete($id)
     {
         $model = new Common_model();
+        $authUser = auth()->user()->firstname . ' ' . auth()->user()->lastname;
+        $user = $model->fetch_where('tbl_users', 'user_id', $id);
+        if ($user->adhar_pic) {
+            Storage::disk('public')->delete('/' . $user->adhar_pic);
+        }
+        if ($user->pan_pic) {
+            Storage::disk('public')->delete('/' . $user->pan_pic);
+        }
+        if ($user->passbook_pic) {
+            Storage::disk('public')->delete('/' . $user->passbook_pic);
+        }
+        if ($user->passport_pic) {
+            Storage::disk('public')->delete('/' . $user->passport_pic);
+        }
+        if ($user->address_proof_pic) {
+            Storage::disk('public')->delete('/' . $user->address_proof_pic);
+        }
+        if ($user->experience_letter_pic) {
+            Storage::disk('public')->delete('/' . $user->experience_letter_pic);
+        }
+        if ($user->educational_certificate_pic) {
+            Storage::disk('public')->delete('/' . $user->educational_certificate_pic);
+        }
         if ($model->delete_data('tbl_users', 'user_id', $id)) {
+            $data = [
+                'type' => 'Delete',
+                'module' => 'User',
+                'username' => $authUser
+            ];
+            Mail::send('emails.CrudNotification', $data, function ($message) use ($authUser) {
+                $message->to(env('MAIL_TO_ADDRESS'))->subject($authUser . " Delete a User");
+            });
             return redirect('/manage-user')->with('message', 'User deleted successfully');
         }
     }

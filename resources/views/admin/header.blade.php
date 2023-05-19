@@ -38,8 +38,8 @@
                 class="nav-link {{ Route::currentRouteName() === 'leave.manage' || Route::currentRouteName() === 'leave.add' ? 'text-danger' : '' }}">Leaves</a>
         </li>
         <li class="nav-item d-none d-sm-inline-block">
-            <a href="{{ route('attendance') }}"
-                class="nav-link {{ Route::currentRouteName() === 'attendance' ? 'text-danger' : '' }}">Attendance</a>
+            <a href="{{ route('attendance.manage') }}"
+                class="nav-link {{ Route::currentRouteName() === 'attendance.manage' ? 'text-danger' : '' }}">Attendance</a>
         </li>
     </ul>
 

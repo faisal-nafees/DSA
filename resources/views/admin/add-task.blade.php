@@ -25,7 +25,8 @@
                             <select class="form-control custom-select" name="user_id" id="user_id">
                                 <option value="">Select Staff Name</option>
                                 @foreach ($users as $user)
-                                    <option value="{{ $user->user_id }}">
+                                    <option value="{{ $user->user_id }}"
+                                        {{ auth()->user()->user_id == $user->user_id ? 'selected' : '' }}>
                                         {{ $user->firstname . ' ' . $user->lastname . ' ' . '(' . $user->role_name . ')' }}
                                     </option>
                                 @endforeach

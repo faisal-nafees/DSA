@@ -6,7 +6,7 @@
     <section class="content pt-3">
         @if (!$today_report)
             <div class="m-2 alert alert-danger">
-                Please submit your todays reportiong of your total worked hours.
+                Please submit your todays reporting of your total worked hours.
             </div>
         @endif
 
@@ -33,6 +33,10 @@
                                     @endforeach
                                 </select>
                             </div>
+                            <a href="{{ route('task.add') }}" class="fs-6 col-sm-12">Add New
+                                Task</a>
+
+
                         </div>
                         <div class="form-group col-md-3">
                             <label for="report_description" class="col-sm-12 col-form-label">Report Description</label>

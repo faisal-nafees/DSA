@@ -35,6 +35,13 @@ class ReportingController extends Controller
     {
         $model = new Common_model();
         if (request()->isMethod('post')) {
+            $current_date = Carbon::now('Asia/Kolkata')->toDateString();
+            $attendance = $model->fetch_where('tbl_attendance', 'user_id', auth()->user()->user_id, null, 'date', $current_date);
+            $data = [
+                'task_id' => $request->task_id,
+            ];
+            $model->edit_data('tbl_attendance', 'attn_id', $attendance->attn_id, $data);
+
 
             $dataArray = $request->except('_token', 'report_status_id');
             $dataArray['user_id'] = auth()->user()->user_id;
@@ -45,7 +52,7 @@ class ReportingController extends Controller
             } else {
                 $dataArray['attachment'] = null;
             }
-            $data = $model->fetch_where('tbl_task', 'task_id', $dataArray['task_id'], 'tbl_report_status', 'tbl_task.report_status_id', 'tbl_report_status.status_id');
+            $data = $model->fetch_where('tbl_task', 'task_id', $dataArray['task_id'], null, null, null, 'tbl_report_status', 'tbl_task.report_status_id', 'tbl_report_status.status_id');
             if ($model->insert_data('tbl_reporting', $dataArray)) {
                 $taskData = [
                     'report_status_id' => $request->report_status_id
@@ -73,7 +80,7 @@ class ReportingController extends Controller
         $report_status = $model->fetch_data('tbl_report_status');
         $users = $model->fetch_data('tbl_users', 'tbl_roles', 'tbl_users.role_id', 'tbl_roles.role_id');
         $tasks = $model->fetch_data('tbl_task', 'tbl_users', 'tbl_task.user_id', 'tbl_users.user_id');
-        $reports = $model->search_today('tbl_reporting', $currentDate, 'report_date',  'tbl_task', 'tbl_reporting.task_id', 'tbl_task.task_id', 'tbl_users', 'tbl_task.user_id', 'tbl_users.user_id', 'tbl_report_status', 'tbl_reporting.report_status_id', 'tbl_report_status.status_id');
+        $reports = $model->search_today('tbl_reporting', $currentDate, 'report_date', null, null,  'tbl_task', 'tbl_reporting.task_id', 'tbl_task.task_id', 'tbl_users', 'tbl_task.user_id', 'tbl_users.user_id', 'tbl_report_status', 'tbl_reporting.report_status_id', 'tbl_report_status.status_id');
         return view('admin.reporting', compact(['reports', 'tasks', 'report_status', 'users', 'today_report']));
     }
 

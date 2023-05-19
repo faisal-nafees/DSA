@@ -2,6 +2,9 @@
 
 @section('content')
     @include('admin.alerts')
+    @php
+        $isFollowup = false;
+    @endphp
 
     <section class="content pt-3">
         <div class="container-fluid">
@@ -14,51 +17,60 @@
                         </div>
                         <!-- /.card-header -->
                         <div class="card-body">
-
-                            <form action="{{ route('enquiry.manage') }}" method="POST">
-                                @csrf
-                                <div class="row align-items-end">
-                                    <div class="col-sm-2">
-                                        <div class="form-group">
-                                            <label for="enqtype_id" class="col-form-label">Enquiry Type</label>
-                                            <select name="enqtype_id" class="custom-select">
-                                                <option value="">Enquiry Type</option>
-                                                @foreach ($enq_type as $type)
-                                                    <option value="{{ $type->enqtype_id }}">{{ $type->enqtype_name }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
+                            <div class="row">
+                                <form action="{{ route('enquiry.manage') }}" method="POST" class="col-md-10">
+                                    @csrf
+                                    <div class="row align-items-end">
+                                        <div class="col-sm-3">
+                                            <div class="form-group">
+                                                <label for="enqtype_id" class="col-form-label">Enquiry Type</label>
+                                                <select name="enqtype_id" class="custom-select">
+                                                    <option value="">Enquiry Type</option>
+                                                    @foreach ($enq_type as $type)
+                                                        <option value="{{ $type->enqtype_id }}">{{ $type->enqtype_name }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="form-group  col-md-2">
-                                        <label for="start_date" class="col-form-label">To</label>
+                                        <div class="form-group  col-md-2">
+                                            <label for="start_date" class="col-form-label">To</label>
 
-                                        <input type="date" class="form-control" name="start_date" id="start_date">
+                                            <input type="date" class="form-control" name="start_date" id="start_date">
 
-                                    </div>
-                                    <div class="form-group  col-md-2">
-                                        <label for="end_date" class="col-form-label">From</label>
+                                        </div>
+                                        <div class="form-group  col-md-2">
+                                            <label for="end_date" class="col-form-label">From</label>
 
-                                        <input type="date" class="form-control" name="end_date" id="end_date">
+                                            <input type="date" class="form-control" name="end_date" id="end_date">
 
-                                    </div>
-                                    <div class="form-group  col-md-1">
-                                        <button type="submit" class="btn btn-outline-success">Submit</button>
-                                    </div>
-                                    <div class="form-group  col-md-1">
-                                        <button type="button" onclick="reset(this)"
-                                            class="btn btn-outline-secondary">Reset</button>
-                                    </div>
-                                    <div class="form-group  col-md-2">
-                                        <a href="{{ route('enquiry.manage') }}" class="btn btn-light"><i
-                                                class="fas fa-sync fa-lg px-2"></i></a>
-                                    </div>
-                                    <div class="custom-control custom-checkbox col-md-2 align-self-center">
+                                        </div>
+                                        <div class="form-group  col-md-2">
+                                            <button type="submit" class="btn btn-outline-success">Submit</button>
+                                        </div>
+                                        <div class="form-group  col-md-1">
+                                            <button type="button" onclick="reset(this)"
+                                                class="btn btn-outline-secondary">Reset</button>
+                                        </div>
+                                        <div class="form-group  col-md-1">
+                                            <a href="{{ route('enquiry.manage') }}" class="btn btn-light"><i
+                                                    class="fas fa-sync fa-lg px-2"></i></a>
+                                        </div>
+                                        {{-- <div class="custom-control custom-checkbox col-md-2 align-self-center">
                                         <input class="custom-control-input" type="checkbox" id="customCheckbox2">
-                                        <label for="customCheckbox2" class="custom-control-label">Today Followup</label>
+                                        <label for="customCheckbox2" class="custom-control-label">Todays Followup</label>
+                                    </div> --}}
                                     </div>
+                                </form>
+                                <div class="custom-control custom-checkbox col-md-2 align-self-center">
+                                    <form action="{{ route('followup.today') }}" method="POST" id="todayFollowup">
+                                        @csrf
+                                        <input class="custom-control-input" type="checkbox" id="todayFollowupCheckbox">
+                                        <label for="todayFollowupCheckbox" class="custom-control-label">Todays
+                                            Followup</label>
+                                    </form>
                                 </div>
-                            </form>
+                            </div>
                             <table id="enquiryTable" class="table table-bordered table-hover">
                                 <thead>
                                     <tr>
@@ -75,7 +87,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($enquiries as $enquiry)
+                                    @foreach ($enquiries->sortByDesc('created_at') as $enquiry)
                                         <tr>
                                             <td>{{ $enquiry->enqtype_name }}</td>
                                             <td>
@@ -83,10 +95,20 @@
                                                     onclick="addFollowup({{ $enquiry->enq_id }})">
                                                     <i class="fas fa-plus pe-1"></i><span>Add</span>
                                                 </a><br>
-                                                <a href="#" class="cursor-pointer text-success"
-                                                    onclick="viewFollowup({{ $enquiry->enq_id }})">
-                                                    <i class="fas fa-eye pe-1"></i>View
-                                                </a>
+
+                                                @foreach ($followups as $followup)
+                                                    @if ($followup->lead_id == $enquiry->enq_id)
+                                                        @php
+                                                            $isFollowup = true;
+                                                        @endphp
+                                                    @endif
+                                                @endforeach
+                                                @if ($isFollowup)
+                                                    <a href="#" class="cursor-pointer text-success"
+                                                        onclick="viewFollowup({{ $enquiry->enq_id }})">
+                                                        <i class="fas fa-eye pe-1"></i>View
+                                                    </a>
+                                                @endif
 
                                             </td>
                                             <td>{{ $enquiry->fullname }}
@@ -149,23 +171,22 @@
                         </div>
                         <div class="row px-4">
                             <div class="form-group col-md-6">
-                                <label for="action" class=" col-form-label">Action</label>
-                                <div class="form-group">
-                                    <select name="action" class="custom-select">
-                                        <option disabled value="">Select Action</option>
-                                        <option value="">Whatsapp</option>
-                                        <option value="">Text</option>
-                                        <option value="">Call</option>
-                                        <option value="">Email</option>
+                                <label for="lead_action" class=" col-form-label">Action</label>
+                                <div class="err_msg">
+                                    <select name="lead_action" class="custom-select">
+                                        <option value="">Select Action</option>
+                                        @foreach ($lead_actions as $action)
+                                            <option value="{{ $action->action_id }}">{{ $action->action_name }}</option>
+                                        @endforeach
                                     </select>
                                 </div>
                             </div>
                             <div class="form-group col-md-6">
-                                <label for="date" class=" col-form-label">Date</label>
+                                <label for="followup_date" class=" col-form-label">Date</label>
 
                                 <div class="err_msg">
-                                    <input type="date" class="form-control" name="date"
-                                        value="{{ old('date') }}" id="date" placeholder="Date">
+                                    <input type="date" class="form-control" name="followup_date"
+                                        value="{{ old('followup_date') }}" id="followup_date">
                                 </div>
                             </div>
                         </div>
@@ -179,33 +200,32 @@
                                 </div>
                             </div>
                             <div class="form-group col-md-6">
-                                <label for="description" class=" col-form-label">Description</label>
+                                <label for="remark" class=" col-form-label">Description</label>
 
                                 <div class=" err_msg">
-                                    <input type="text" class="form-control" name="description"
-                                        value="{{ old('description') }}" id="description"
-                                        placeholder="Description/Remark">
+                                    <textarea rows="2" class="form-control" name="remark" id="remark" placeholder="Description/Remark">{{ old('remark') }}</textarea>
                                 </div>
                             </div>
                         </div>
                         <div class="row px-4">
                             <div class="form-group col-md-6">
-                                <label for="next_date" class=" col-form-label">Next Followup</label>
+                                <label for="next_followup_date" class=" col-form-label">Next Followup</label>
 
                                 <div class=" err_msg">
-                                    <input type="date" class="form-control" name="next_date"
-                                        value="{{ old('next_date') }}" id="next_date">
+                                    <input type="date" class="form-control" name="next_followup_date"
+                                        value="{{ old('next_followup_date') }}" id="next_followup_date">
                                 </div>
                             </div>
                             <div class="form-group col-md-6">
-                                <label for="time" class=" col-form-label">Followup Time</label>
+                                <label for="followup_time" class=" col-form-label">Followup Time</label>
 
                                 <div class=" err_msg">
-                                    <input type="time" class="form-control" name="time"
-                                        value="{{ old('time') }}" id="time">
+                                    <input type="time" class="form-control" name="followup_time"
+                                        value="{{ old('followup_time') }}" id="followup_time">
                                 </div>
                             </div>
                         </div>
+                        <input type="text" hidden name="lead_id" id="lead_id">
                         <div class="modal-footer justify-content-between">
                             <button type="button" class="btn btn-default close-modal"
                                 data-dismiss="modal">Close</button>
@@ -224,12 +244,12 @@
             data-target="#view-followup">
             Open Modal
         </button>
-        <form action="" id="replyForm">
+        <form action="" id="viewfollowupForm">
             <div class="modal fade" id="view-followup">
                 <div class="modal-dialog modal-lg">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h4 class="modal-title">Comment</h4>
+                            <h4 class="modal-title">Followup</h4>
                             <button type="button" class="close close-modal" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
@@ -253,7 +273,7 @@
                                 <div class="tab-content" id="custom-tabs-four-tabContent">
                                     <div class="tab-pane fade show active" id="custom-tabs-four-home" role="tabpanel"
                                         aria-labelledby="custom-tabs-four-home-tab">
-                                        <table id="contactTable" class="table table-bordered table-striped table-hover">
+                                        <table id="pendingTable" class="table table-bordered table-striped table-hover">
                                             <thead>
                                                 <tr>
                                                     <th>Action</th>
@@ -264,25 +284,14 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <tr>
-                                                    <td><a href="#" onclick="addFollowup()">Add Followup</a>
-                                                    </td>
-                                                    <td>Demo</td>
-                                                    <td>10/05/2023</td>
-                                                    <td>
-                                                        10:09
-                                                    </td>
-                                                    <td>Test</td>
-
-                                                </tr>
-
+                                                <td colspan="5">No data found</td>
                                             </tbody>
 
                                         </table>
                                     </div>
                                     <div class="tab-pane fade" id="custom-tabs-four-profile" role="tabpanel"
                                         aria-labelledby="custom-tabs-four-profile-tab">
-                                        <table id="contactTable" class="table table-bordered table-striped table-hover">
+                                        <table id="historyTable" class="table table-bordered table-striped table-hover">
                                             <thead>
                                                 <tr>
                                                     <th>Lead Name</th>
@@ -297,21 +306,8 @@
                                             </thead>
                                             <tbody>
                                                 <tr>
-                                                    <td>Demo</td>
-                                                    <td>Whatsapp</td>
-                                                    <td>10/05/2023</td>
-                                                    <td>12/05/2023</td>
-                                                    <td>
-                                                        10:09
-                                                    </td>
-                                                    <td>Test</td>
-                                                    <td>Description</td>
-                                                    <td>User</td>
-
                                                 </tr>
-
                                             </tbody>
-
                                         </table>
                                     </div>
                                 </div>
@@ -329,6 +325,17 @@
     </section>
 
     <script>
+        $(document).ready(function() {
+            // Add event listener for checkbox change
+            $('#todayFollowupCheckbox').change(function() {
+                // Check if the checkbox is selected
+                if ($(this).is(':checked')) {
+                    // Submit the form
+                    $('#todayFollowup').submit();
+                }
+            });
+        });
+
         $(function() {
             $('#enquiryTable').DataTable({
                 "paging": true,
@@ -376,24 +383,24 @@
             // Add Followup validation
             $('#addFollowupForm').validate({
                 rules: {
-                    action: {
+                    lead_action: {
                         required: true,
                     },
-                    date: {
+                    followup_date: {
                         required: true,
                     },
                     title: {
                         required: true,
                         minlength: 2,
                     },
-                    description: {
+                    remark: {
                         required: true,
                         minlength: 2,
                     },
-                    next_date: {
+                    next_followup_date: {
                         required: true,
                     },
-                    time: {
+                    followup_time: {
                         required: true
                     },
                 },
@@ -402,21 +409,21 @@
                         required: "Please enter title",
                         minlength: "Title must be at least 2 characters"
                     },
-                    date: {
+                    followup_date: {
                         required: "Please enter date",
                     },
-                    action: {
+                    lead_action: {
                         required: "Please select action",
                     },
-                    description: {
+                    remark: {
                         required: "Please enter description",
                         minlength: "Whatsapp no. must be at least 10 characters",
                         maxlength: "Whatsapp no. cannot be more than 13 characters long."
                     },
-                    next_date: {
+                    next_followup_date: {
                         required: "Please enter date",
                     },
-                    time: {
+                    followup_time: {
                         required: "Please enter time",
                     },
                 },
@@ -435,25 +442,164 @@
         });
 
         function addFollowup(e) {
+            var form = $('#addFollowupForm');
+            form[0].reset(); // Clear form fields
+            form.validate().resetForm(); // Reset validation
+            form.find('.is-invalid').removeClass('is-invalid'); // Remove invalid classes
             $('#openAddFollowup').click();
             $('.close-modal').click();
-            $id = e;
+            var lead_id = e;
+            var currentDate = new Date();
+            // Format the date as YYYY-MM-DD
+            var formattedDate = currentDate.toISOString().slice(0, 10);
+            // Set the formatted date as the value of the date input field
+            $("#followup_date").val(formattedDate);
+            $("#lead_id").val(lead_id);
+            $.ajax({
+                url: "{{ URL::to('/view-followup') }}/" + lead_id,
+                type: 'GET',
+                data: {
+                    lead_id: lead_id,
+                },
+                success: function(data) {
+                    $('.close-modal')
+                        .click(); // Hide the modal after successful submission
+                    console.log(data.length);
+                    if (data.length > 0) {
+                        switch (data.length) {
+                            case 1:
+                                $('#title').val('2nd Followup')
+                                break;
+                            case 2:
+                                $('#title').val('3rd Followup')
+                                break;
+                            case 3:
+                                $('#title').val('4th Followup')
+                                break;
+                            case 4:
+                                $('#title').val('5th Followup')
+                                break;
+                            case 5:
+                                $('#title').val('6th Followup')
+                                break;
+                            case 6:
+                                $('#title').val('7th Followup')
+                                break;
+                            default:
+                                $('#title').val('nth Followup')
+                                break;
+                        }
+                    }
+                },
+                error: function(xhr) {
+                    // Handle the error response
+                    console.log(xhr.responseText);
+                }
+            });
         }
 
         function viewFollowup(e) {
             $('#openViewFollowup').click();
-            $id = e;
+            var lead_id = e;
+            $.ajax({
+                url: "{{ URL::to('/view-followup') }}/" + lead_id,
+                type: 'GET',
+                data: {
+                    lead_id: lead_id,
+                },
+                success: function(data) {
+                    $('.close-modal')
+                        .click(); // Hide the modal after successful submission
+                    pendingFollowup(data);
+                    followupHistory(data);
+
+                },
+                error: function(xhr) {
+                    // Handle the error response
+                    console.log(xhr.responseText);
+                }
+            });
         }
 
-        $(document).ready(function() {
-            // Get the current date
-            var currentDate = new Date();
-
-            // Format the date as YYYY-MM-DD
-            var formattedDate = currentDate.toISOString().slice(0, 10);
-
-            // Set the formatted date as the value of the date input field
-            $("#date").val(formattedDate);
+        $(function() {
+            $('#addFollowupForm').submit(function(e) {
+                e.preventDefault(); // Prevent default form submission
+                var form = $(this);
+                var formData = new FormData(this);
+                if (form.valid()) {
+                    $.ajax({
+                        url: "{{ URL::to('/add-followup') }}",
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        type: 'POST',
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        success: function(data) {
+                            $('.close-modal')
+                                .click(); // Hide the modal after successful submission
+                            Toastify({
+                                text: data,
+                                duration: 3000,
+                                destination: "https://github.com/apvarun/toastify-js",
+                                newWindow: true,
+                                close: true,
+                                gravity: "top", // `top` or `bottom`
+                                position: "center", // `left`, `center` or `right`
+                                stopOnFocus: true, // Prevents dismissing of toast on hover
+                                style: {
+                                    background: "linear-gradient(to right, #61FF57, #96c93d)",
+                                },
+                                onClick: function() {} // Callback after click
+                            }).showToast();
+                        },
+                        error: function(xhr) {
+                            // Handle the error response
+                            console.log(xhr.responseText);
+                        }
+                    });
+                }
+            });
         });
+
+        function pendingFollowup(data) {
+            var tableBody = $('#pendingTable tbody');
+            tableBody.empty(); // Clear existing rows
+
+            $.each(data, function(index, item) {
+                if (item.followup_status == 1) {
+                    console.log(1234567);
+                    var row = $('<tr>');
+                    row.append($('<td>').html('<a href="#" onclick="addFollowup(' +
+                        item.lead_id + ')">Add Followup</a>'));
+                    row.append($('<td>').text(item.fullname));
+                    row.append($('<td>').text(item.followup_date));
+                    row.append($('<td>').text(item.followup_time));
+                    row.append($('<td>').text(item.firstname + ' ' + item.lastname));
+                    tableBody.append(row);
+                }
+            });
+        }
+
+        function followupHistory(data) {
+            var tableBody = $('#historyTable tbody');
+            tableBody.empty(); // Clear existing rows
+
+            $.each(data, function(index, item) {
+                if (item.followup_status == 0) {
+                    var row = $('<tr>');
+                    row.append($('<td>').text(item.fullname));
+                    row.append($('<td>').text(item.action_name));
+                    row.append($('<td>').text(item.followup_date));
+                    row.append($('<td>').text(item.next_followup_date));
+                    row.append($('<td>').text(item.followup_time));
+                    row.append($('<td>').text(item.title));
+                    row.append($('<td>').text(item.remark));
+                    row.append($('<td>').text(item.firstname + ' ' + item.lastname));
+                    tableBody.append(row);
+                }
+            });
+        }
     </script>
 @endsection

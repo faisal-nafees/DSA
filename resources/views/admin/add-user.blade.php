@@ -491,12 +491,12 @@
                     pan_no: {
                         required: true,
                         minlength: 10,
-                        maxlength: 20,
+                        maxlength: 10,
                     },
                     adhar_no: {
                         required: true,
                         minlength: 16,
-                        maxlength: 20,
+                        maxlength: 16,
                     },
                     temporary_address: {
                         required: true,
@@ -589,13 +589,13 @@
                     },
                     pan_no: {
                         required: "Please Enter PAN No.",
-                        minlength: "PAN no. must be at least 10 characters",
-                        maxlength: "PAN no. cannot be more than 20 characters long"
+                        minlength: "PAN no. must be 10 characters",
+                        maxlength: "PAN no. must be 10 characters"
                     },
                     adhar_no: {
                         required: "Please Enter Adhaar No.",
-                        minlength: "Adhaar no. must be at least 16 characters",
-                        maxlength: "Adhaar no. cannot be more than 20 characters long"
+                        minlength: "Adhaar no. must be 16 characters",
+                        maxlength: "Adhaar no. must be 16 characters"
                     },
                     temporary_address: {
                         required: "Please Enter Temporary Address",

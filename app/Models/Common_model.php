@@ -7,7 +7,6 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Request;
 
 class Common_model extends Model
 {
@@ -40,7 +39,7 @@ class Common_model extends Model
         return DB::table($tableName)->where($column, $value)->delete();
     }
 
-    public function fetch_data($tableName, $joinTable1 = null, $joinColumn1 = null, $joinColumn2 = null, $joinTable2 = null, $joinColumn3 = null, $joinColumn4 = null, $joinTable3 = null, $joinColumn5 = null, $joinColumn6 = null)
+    public function fetch_data($tableName, $joinTable1 = null, $joinColumn1 = null, $joinColumn2 = null, $joinTable2 = null, $joinColumn3 = null, $joinColumn4 = null, $joinTable3 = null, $joinColumn5 = null, $joinColumn6 = null, $joinTable4 = null, $joinColumn7 = null, $joinColumn8 = null)
     {
         $query = DB::table($tableName);
 
@@ -55,14 +54,20 @@ class Common_model extends Model
         if ($joinTable3 && $joinColumn5 && $joinColumn6) {
             $query->join($joinTable3, $joinColumn5, '=', $joinColumn6);
         }
+        if ($joinTable4 && $joinColumn7 && $joinColumn8) {
+            $query->join($joinTable4, $joinColumn7, '=', $joinColumn8);
+        }
 
         return $query->get();
     }
 
-
-    public function fetch_where($tableName, $column, $value, $joinTable1 = null, $joinColumn1 = null, $joinColumn2 = null, $joinTable2 = null, $joinColumn3 = null, $joinColumn4 = null)
+    public function fetch_where($tableName, $column1, $value1, $count = null, $column2 = null, $value2 = null, $joinTable1 = null, $joinColumn1 = null, $joinColumn2 = null, $joinTable2 = null, $joinColumn3 = null, $joinColumn4 = null, $joinTable3 = null, $joinColumn5 = null, $joinColumn6 = null)
     {
-        $query = DB::table($tableName)->where($column, $value);
+        $query = DB::table($tableName)->where($column1, $value1);
+
+        if ($column2 && $value2) {
+            $query->where($column2, $value2);
+        }
 
         if ($joinTable1 && $joinColumn1 && $joinColumn2) {
             $query->join($joinTable1, $joinColumn1, '=', $joinColumn2);
@@ -72,8 +77,19 @@ class Common_model extends Model
             $query->join($joinTable2, $joinColumn3, '=', $joinColumn4);
         }
 
+        if ($joinTable3 && $joinColumn5 && $joinColumn6) {
+            $query->join($joinTable3, $joinColumn5, '=', $joinColumn6);
+        }
+
+        if ($count == 'all') {
+            return $query->get();
+        }
+
         return $query->first();
     }
+
+
+
 
     public function search_data($tableName, $fieldName = null, $startDate = null, $endDate = null,  $dateFieldName = null, $searchTerm = null, $joinTable1 = null, $joinColumn1 = null, $joinColumn2 = null, $joinTable2 = null, $joinColumn3 = null, $joinColumn4 = null, $joinTable3 = null, $joinColumn5 = null, $joinColumn6 = null)
     {
@@ -104,12 +120,15 @@ class Common_model extends Model
         return $query->get();
     }
 
-    public function search_today($tableName, $startDate = null, $dateFieldName = null, $joinTable1 = null, $joinColumn1 = null, $joinColumn2 = null, $joinTable2 = null, $joinColumn3 = null, $joinColumn4 = null, $joinTable3 = null, $joinColumn5 = null, $joinColumn6 = null)
+    public function search_today($tableName, $startDate = null, $dateFieldName = null, $fieldName = null, $value = null, $joinTable1 = null, $joinColumn1 = null, $joinColumn2 = null, $joinTable2 = null, $joinColumn3 = null, $joinColumn4 = null, $joinTable3 = null, $joinColumn5 = null, $joinColumn6 = null, $joinTable4 = null, $joinColumn7 = null, $joinColumn8 = null)
     {
         $query = DB::table($tableName);
 
         if ($startDate && $dateFieldName) {
             $query->whereDate($tableName . '.' . $dateFieldName, '=', $startDate);
+        }
+        if ($fieldName && $value) {
+            $query->where($tableName . '.' . $fieldName, '=', $value);
         }
         if ($joinTable1 && $joinColumn1 && $joinColumn2) {
             $query->join($joinTable1, $joinColumn1, '=', $joinColumn2);
@@ -120,6 +139,19 @@ class Common_model extends Model
         if ($joinTable3 && $joinColumn5 && $joinColumn6) {
             $query->join($joinTable3, $joinColumn5, '=', $joinColumn6);
         }
+        if ($joinTable4 && $joinColumn7 && $joinColumn8) {
+            $query->join($joinTable4, $joinColumn7, '=', $joinColumn8);
+        }
         return $query->get();
+    }
+
+    public function fetch_latest_data($tableName, $fieldName1, $value, $orderBy, $fieldName2)
+    {
+        $query = DB::table($tableName)
+            ->where($fieldName1, $value)
+            ->orderBy($fieldName2, $orderBy)
+            ->first();
+
+        return $query;
     }
 }

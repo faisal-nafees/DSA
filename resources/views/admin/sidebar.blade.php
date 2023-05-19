@@ -23,8 +23,7 @@
         <nav class="mt-2">
             <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
                 data-accordion="false">
-                <!-- Add icons to the links using the .nav-icon class
-       with font-awesome or any other icon font library -->
+                <!-- Add icons to the links using the .nav-icon class with font-awesome or any other icon font library -->
                 <li class="nav-item">
                     <a href="{{ route('dashboard') }}"
                         class="nav-link {{ Route::currentRouteName() === 'dashboard' ? 'active' : '' }}">
@@ -67,17 +66,8 @@
                         <i class="nav-icon fas fa-address-book"></i>
                         <p>
                             Contact
-                            {{-- <i class="fas fa-angle-left right"></i> --}}
                         </p>
                     </a>
-                    {{-- <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="{{ route('contact.manage') }}" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Manage Contacts</p>
-                            </a>
-                        </li>
-                    </ul> --}}
                 </li>
                 <li class="nav-item">
                     <a href="{{ route('editProfile') }}"
@@ -85,7 +75,6 @@
                         <i class="nav-icon fas fa-edit"></i>
                         <p>
                             Profile
-                            {{-- <i class="fas fa-angle-left right"></i> --}}
                         </p>
                     </a>
                 </li>
@@ -152,7 +141,6 @@
                         <i class="nav-icon fas fa-file"></i>
                         <p>
                             Reporting
-                            {{-- <i class="fas fa-angle-left right"></i> --}}
                         </p>
                     </a>
                 </li>
@@ -162,30 +150,29 @@
                         <i class="nav-icon fas fa-calendar-times"></i>
                         <p>
                             Leaves
-                            {{-- <i class="fas fa-angle-left right"></i> --}}
                         </p>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="{{ route('attendance') }}"
+                    <a href="{{ route('attendance.manage') }}"
                         class="nav-link {{ Route::currentRouteName() === 'attendance' ? 'active' : '' }}">
                         <i class="nav-icon far fa-clock"></i>
                         <p>
                             Attendance
-                            {{-- <i class="fas fa-angle-left right"></i> --}}
                         </p>
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a href="{{ route('logout') }}" class="nav-link bg-white">
+                        <i class="nav-icon fas fa-power-off text-danger"></i>
+                        <p class="text-danger">Logout</p>
+                    </a>
+                </li>
                 <li class="nav-item bg-danger rounded">
-                    <a href="{{ route('logout') }}" class="nav-link"
-                        onclick="event.preventDefault();
-                    document.getElementById('logout-form').submit();">
-                        <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                            @csrf
-                        </form>
-                        <i class="nav-icon 	fas fa-sign-out-alt"></i>
+                    <a href="{{ route('markout') }}" class="nav-link">
+                        <i class="nav-icon	fas fa-sign-out-alt"></i>
                         <p>
-                            Logout
+                            Markout
                         </p>
                     </a>
                 </li>
