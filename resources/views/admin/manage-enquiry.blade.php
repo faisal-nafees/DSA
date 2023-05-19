@@ -101,6 +101,10 @@
                                                         @php
                                                             $isFollowup = true;
                                                         @endphp
+                                                    @else
+                                                        @php
+                                                            $isFollowup = false;
+                                                        @endphp
                                                     @endif
                                                 @endforeach
                                                 @if ($isFollowup)

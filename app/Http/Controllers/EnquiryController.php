@@ -21,7 +21,7 @@ class EnquiryController extends Controller
             return view('admin.manage-enquiry', compact(['enquiries', 'enq_type', 'lead_actions', 'followups']));
         }
         $enquiries = $model->fetch_data('tbl_enquiry', 'tbl_lead_status', 'tbl_enquiry.status_id', 'tbl_lead_status.status_id', 'tbl_type', 'tbl_enquiry.enq_type', 'tbl_type.enqtype_id', 'tbl_users', 'tbl_enquiry.created_user', 'tbl_users.user_id');
-        // return $enquiries;
+        // return $followups;
         return view('admin.manage-enquiry', compact(['enquiries', 'enq_type', 'lead_actions', 'followups']));
     }
 
